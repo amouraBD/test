@@ -1,0 +1,329 @@
+```html
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Maca Coffee Admin</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+body {
+    background: #f5eee6;
+}
+
+.admin-layout {
+    min-height: 100vh;
+    display: flex;
+}
+
+.sidebar {
+    width: 240px;
+    background: #24130b;
+    color: white;
+    padding: 30px 20px;
+}
+
+.sidebar h2 {
+    color: #e5c27d;
+    margin-bottom: 35px;
+}
+
+.sidebar a {
+    display: block;
+    padding: 13px;
+    margin-bottom: 8px;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+.sidebar a:hover {
+    background: #63351e;
+}
+
+.admin-main {
+    flex: 1;
+    padding: 35px;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.view-site {
+    background: #63351e;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 20px;
+    text-decoration: none;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.stat {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,.06);
+}
+
+.stat p {
+    color: #756b63;
+}
+
+.stat h2 {
+    margin-top: 10px;
+    color: #63351e;
+    font-size: 32px;
+}
+
+.orders {
+    margin-top: 35px;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    overflow-x: auto;
+}
+
+.orders table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.orders th,
+.orders td {
+    padding: 14px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.status {
+    padding: 6px 12px;
+    background: #f3e7d5;
+    border-radius: 20px;
+    color: #63351e;
+}
+
+@media(max-width: 800px) {
+
+    .sidebar {
+        width: 180px;
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media(max-width: 600px) {
+
+    .admin-layout {
+        display: block;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .admin-main {
+        padding: 20px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="admin-layout">
+
+    <aside class="sidebar">
+
+        <h2>☕ Maca Admin</h2>
+
+        <a href="#">📊 Dashboard</a>
+        <a href="#">📦 Products</a>
+        <a href="#">🛒 Orders</a>
+        <a href="#">👥 Customers</a>
+        <a href="#">⭐ Reviews</a>
+        <a href="#">⚙️ Settings</a>
+
+        <br>
+
+        <a href="index.html">
+            🌐 View Website
+        </a>
+
+    </aside>
+
+
+    <main class="admin-main">
+
+        <div class="admin-header">
+
+            <div>
+                <h1>Dashboard</h1>
+                <p>Welcome to Maca Coffee Admin Panel</p>
+            </div>
+
+            <a
+                href="index.html"
+                class="view-site">
+                Website দেখুন
+            </a>
+
+        </div>
+
+
+        <div class="stats">
+
+            <div class="stat">
+                <p>Total Orders</p>
+                <h2 id="totalOrders">0</h2>
+            </div>
+
+            <div class="stat">
+                <p>Products</p>
+                <h2>3</h2>
+            </div>
+
+            <div class="stat">
+                <p>Customers</p>
+                <h2 id="totalCustomers">0</h2>
+            </div>
+
+            <div class="stat">
+                <p>Reviews</p>
+                <h2>24</h2>
+            </div>
+
+        </div>
+
+
+        <div class="orders">
+
+            <h2>Recent Orders</h2>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Customer</th>
+                        <th>Phone</th>
+                        <th>Product</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="orderTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+const orders =
+    JSON.parse(
+        localStorage.getItem("macaOrders")
+    ) || [];
+
+
+document.getElementById(
+    "totalOrders"
+).innerText = orders.length;
+
+
+const customers =
+    [...new Set(
+        orders.map(order => order.phone)
+    )];
+
+
+document.getElementById(
+    "totalCustomers"
+).innerText = customers.length;
+
+
+const table =
+    document.getElementById("orderTable");
+
+
+if (orders.length === 0) {
+
+    table.innerHTML = `
+        <tr>
+            <td colspan="5">
+                এখনো কোনো অর্ডার নেই।
+            </td>
+        </tr>
+    `;
+
+} else {
+
+    orders.slice().reverse().forEach(order => {
+
+        table.innerHTML += `
+
+        <tr>
+
+            <td>${order.name}</td>
+
+            <td>${order.phone}</td>
+
+            <td>${order.product}</td>
+
+            <td>${order.date}</td>
+
+            <td>
+                <span class="status">
+                    New
+                </span>
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>
+```
